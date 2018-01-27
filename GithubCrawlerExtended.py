@@ -3,6 +3,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+import json
 
 class NoProxyAvailable(Exception):
 	def __init__(self):
@@ -104,7 +105,7 @@ class GithubCrawlerExtended(object):
 
 			self.result.append(res)
 
-		print (self.result)
+		print (json.dumps(self.result, indent=2))
 		return str(self.result) #for testing purposes
 
 
