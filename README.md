@@ -17,7 +17,6 @@ crawler = GithubCrawlerExtended(keywords,proxies,git_type)
 crawler.crawl()
 ```
 
-<<<<<<< HEAD
 Example Usage for GithubCrawlerExtended (extended version)
 -------------
 
@@ -32,6 +31,5 @@ crawler = GithubCrawlerExtended(keywords,proxies,git_type, more_info=True) #for 
 
 crawler.crawl()
 ```
-=======
-Or you can use the "test.py" file to test both of the tasks
->>>>>>> 300682fa1f29297510ed0e79e971d2ee3c11f204
+
+Or you can use the "sample.py" file to test both of the tasks
