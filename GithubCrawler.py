@@ -6,6 +6,11 @@ from bs4 import BeautifulSoup
 
 class GithubCrawler(object):
 
+	"""This class it's not the official one, just does the job for the first task,
+	but then I decided to merge it with the optional one,
+	so the final version is in the GithubCrawlerExtended class"""
+
+
 	TYPE_REPOSITORIES = 'Repositories'
 	TYPE_ISSUES = 'Issues'
 	TYPE_WIKI = 'Wikis'
