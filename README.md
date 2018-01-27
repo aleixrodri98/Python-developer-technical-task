@@ -34,7 +34,7 @@ crawler.crawl()
 
 Or you can use the "sample.py" file to test both of the tasks
 
-Sample Output
+Sample.py Output
 -------------
 
 ```
