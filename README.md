@@ -1,4 +1,4 @@
-# Python-developer-technical-task
+# Python Developer Technical Task
 Techical task for Red Points recruitment process
 
 
