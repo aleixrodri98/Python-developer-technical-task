@@ -4,6 +4,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from time import sleep
 
 class NoProxyAvailable(Exception):
 	def __init__(self):
@@ -45,7 +46,7 @@ class GithubCrawlerExtended(object):
 				try:
 					url_keywords = '+'.join(self.keywords)
 					r = requests.get(request_url, proxies=proxy_r) #I would put a timeout just in case, to not hang forever
-					if 'You have triggered an abuse detection mechanism.' not in r:
+					if 'You have triggered an abuse detection mechanism.' not in r.text: #Not abort in case of abuse detection
 						return r.text
 					else:
 						print ('Proxy #{} detected for abuse, trying new one'.format(self.last_p))
@@ -95,13 +96,15 @@ class GithubCrawlerExtended(object):
 				res['extra']['language_stats'] = {}
 
 				r = self.using_requests(link)
-				soup = BeautifulSoup(r, self.DEFAULT_PARSER)
-				div = soup.find('div',{'class':'repository-lang-stats-graph'})
-				language_color_list = div.findAll('span',{'class':'language-color'})
-				for l in language_color_list:
-					lang_tmp = l['aria-label'].replace('%','')
-					lang, percentage = lang_tmp.split()
-					res['extra']['language_stats'][lang] = float(percentage)
+				if 'This repository is empty.' not in r: #put language_stats empty in case repository is empty
+					soup = BeautifulSoup(r, self.DEFAULT_PARSER)
+					div = soup.find('div',{'class':'repository-lang-stats-graph'})
+					language_color_list = div.findAll('span',{'class':'language-color'})
+					for l in language_color_list:
+						lang_tmp = l['aria-label'].replace('%','')
+						lang, percentage = lang_tmp.split()
+						res['extra']['language_stats'][lang] = float(percentage)
+
 
 			self.result.append(res)
 
