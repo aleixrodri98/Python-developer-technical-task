@@ -10,9 +10,9 @@ json_inp = '''{
     "css"
   ],
   "proxies": [
+    "83.40.144.105:3128",
   	"51.15.222.119:80",
     "194.126.37.94:8080",
-    "83.40.144.105:3128",
     "13.78.125.167:8080",
     "223.19.85.16:8118"
   ],
@@ -24,6 +24,10 @@ json_inp = '''{
 
 j = json.loads(json_inp)
 
-GithubCrawler(j['keywords'],j['proxies'],j['type'])
+crawler = GithubCrawlerExtended(j['keywords'],j['proxies'],j['type'])
 
-GithubCrawlerExtended(j['keywords'],j['proxies'],j['type'], more_info=True)
+crawler.crawl()
+
+crawler = GithubCrawlerExtended(j['keywords'],j['proxies'],j['type'], more_info=True)
+
+crawler.crawl()

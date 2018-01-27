@@ -1,0 +1,60 @@
+import pytest
+from GithubCrawlerExtended import GithubCrawlerExtended, NoProxyAvailable, TypeNotSupported
+
+
+class TestGithubCrawler:
+	DEFAULT_PROXIES = [
+		"83.40.144.105:3128", #this one is mine, so it always works
+		"194.126.37.94:8080",
+		"13.78.125.167:8080",
+		"223.19.85.16:8118"
+	]
+	DEFAULT_KEYWORDS = ["openstack","nova","css"]
+	DEFAULT_TYPE = "Repositories"
+	GIT_TYPES = ["Repositories", "Issues", "Wikis"]
+
+	def test_example_1(self):
+		"""Testing non extended version with first sample"""
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,self.DEFAULT_PROXIES,self.GIT_TYPES[0])
+		res = crawler.crawl()
+		expected_repo = "[{'url': 'https://github.com/atuldjadhav/DropBox-Cloud-Storage'}]"
+		assert res == expected_repo
+
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,self.DEFAULT_PROXIES,self.GIT_TYPES[1])
+		res = crawler.crawl()
+		expected_issues = "[{'url': 'https://github.com/hellowj/blog/issues/37'}, {'url': 'https://github.com/altai/nova-billing/issues/1'}, {'url': 'https://github.com/novnc/websockify/issues/180'}, {'url': 'https://github.com/zioc/contrail-devstack-plugin/issues/27'}, {'url': 'https://github.com/rcbops/rpc-openstack/pull/2257'}, {'url': 'https://github.com/aaronkurtz/gourmand/pull/35'}, {'url': 'https://github.com/sphinx-doc/sphinx/issues/3782'}, {'url': 'https://github.com/python/core-workflow/issues/6'}, {'url': 'https://github.com/rcbops/horizon-extensions/pull/10'}, {'url': 'https://github.com/ansible/ansible-modules-extras/pull/2208'}]"
+		assert res == expected_issues
+
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,self.DEFAULT_PROXIES,self.GIT_TYPES[2])
+		res = crawler.crawl()
+		expected_wiki = "[{'url': 'https://github.com/vault-team/vault-website'}, {'url': 'https://github.com/iiwaziri/wiki_learn'}, {'url': 'https://github.com/marcosaletta/Juno-CentOS7-Guide'}, {'url': 'https://github.com/MirantisDellCrowbar/crowbar'}, {'url': 'https://github.com/dellcloudedge/crowbar'}, {'url': 'https://github.com/vinayakponangi/crowbar'}, {'url': 'https://github.com/rhafer/crowbar'}, {'url': 'https://github.com/jamestyj/crowbar'}, {'url': 'https://github.com/eryeru12/crowbar'}, {'url': 'https://github.com/opencit/opencit'}]"
+		assert res == expected_wiki
+
+		"""Testing extended version with first sample"""
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,self.DEFAULT_PROXIES,self.GIT_TYPES[0], more_info=True)
+		res = crawler.crawl()
+		expected_repo_more = "[{'url': 'https://github.com/atuldjadhav/DropBox-Cloud-Storage', 'extra': {'owner': 'atuldjadhav', 'language_stats': {'CSS': 52.0, 'JavaScript': 47.2, 'HTML': 0.8}}}]"
+		assert res == expected_repo_more
+
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,self.DEFAULT_PROXIES,self.GIT_TYPES[1], more_info=True)
+		res = crawler.crawl()
+		assert res == expected_issues
+
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,self.DEFAULT_PROXIES,self.GIT_TYPES[2], more_info=True)
+		res = crawler.crawl()
+		assert res == expected_wiki
+
+
+	def test_crawler_raises_exception_on_not_working_proxy_list(self):
+		proxies = ["51.15.222.119:80","194.126.37.94:8080"]
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,proxies,self.DEFAULT_TYPE)
+		with pytest.raises(NoProxyAvailable):
+			crawler.crawl()
+
+	def test_crawler_raises_exception_on_invalid_type(self):
+		crawler = GithubCrawlerExtended(self.DEFAULT_KEYWORDS,self.DEFAULT_PROXIES,'InvalidType')
+		with pytest.raises(TypeNotSupported):
+			crawler.crawl()		
+
+
+TestGithubCrawler().test_crawler_raises_exception_on_invalid_type()

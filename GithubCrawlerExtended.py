@@ -4,6 +4,14 @@
 import requests
 from bs4 import BeautifulSoup
 
+class NoProxyAvailable(Exception):
+	def __init__(self):
+		Exception.__init__(self,"No available proxies") 
+
+class TypeNotSupported(Exception):
+	def __init__(self):
+		Exception.__init__(self,"Type not supported") 
+
 class GithubCrawlerExtended(object):
 
 	TYPE_REPOSITORIES = 'Repositories'
@@ -16,6 +24,8 @@ class GithubCrawlerExtended(object):
 
 	GITHUB_BASE_URL = 'https://github.com'
 
+	DEFAULT_PARSER = 'html.parser'
+
 	def __init__(self, keywords, proxies, git_type, more_info=False):
 		self.proxies = proxies
 		self.keywords = keywords
@@ -23,7 +33,6 @@ class GithubCrawlerExtended(object):
 		self.more_info = more_info
 		self.last_p = 0
 		self.result = []
-		self.crawl()
 
 	def using_requests(self, request_url):
 		while True:
@@ -35,17 +44,20 @@ class GithubCrawlerExtended(object):
 				try:
 					url_keywords = '+'.join(self.keywords)
 					r = requests.get(request_url, proxies=proxy_r) #I would put a timeout just in case, to not hang forever
-					return r.text
+					if 'You have triggered an abuse detection mechanism.' not in r:
+						return r.text
+					else:
+						print ('Proxy #{} detected for abuse, trying new one'.format(self.last_p))
+						self.last_p += 1
 				except requests.exceptions.ProxyError:
 					print ('Error Proxy #{}, trying new one'.format(self.last_p))
 					self.last_p += 1
 				except requests.exceptions.RequestException as e:
 					print (e) #log exception in production, maybe github not available
-					return False
+					raise e
 
 			else:
-				print ('No available proxies')#log error proxy in production
-				return False
+				raise NoProxyAvailable()
 
 
 	def crawl(self):
@@ -56,16 +68,13 @@ class GithubCrawlerExtended(object):
 		elif self.git_type == self.TYPE_WIKI:
 			git_url_type = self.TYPE_WIKI_HTML
 		else:
-			print ('Type not supported')
-			return
+			raise TypeNotSupported()
 
 		url_keywords = '+'.join(self.keywords)
 		search_url = '{}/search?q={}&type={}&utf8=%E2%9C%93'.format(self.GITHUB_BASE_URL, url_keywords, self.git_type)
 		r = self.using_requests(search_url)
-		if not r:
-			return
 
-		soup = BeautifulSoup(r, "html.parser")
+		soup = BeautifulSoup(r, self.DEFAULT_PARSER)
 
 		items = soup.findAll('div',{'class': '{}-list-item'.format(git_url_type)})
 
@@ -85,7 +94,7 @@ class GithubCrawlerExtended(object):
 				res['extra']['language_stats'] = {}
 
 				r = self.using_requests(link)
-				soup = BeautifulSoup(r, "html.parser")
+				soup = BeautifulSoup(r, self.DEFAULT_PARSER)
 				div = soup.find('div',{'class':'repository-lang-stats-graph'})
 				language_color_list = div.findAll('span',{'class':'language-color'})
 				for l in language_color_list:
@@ -96,5 +105,6 @@ class GithubCrawlerExtended(object):
 			self.result.append(res)
 
 		print (self.result)
+		return str(self.result) #for testing purposes
 
 
