@@ -33,3 +33,27 @@ crawler.crawl()
 ```
 
 Or you can use the "sample.py" file to test both of the tasks
+
+Sample Output
+-------------
+
+```
+[
+  {
+    "url": "https://github.com/atuldjadhav/DropBox-Cloud-Storage"
+  }
+]
+[
+  {
+    "url": "https://github.com/atuldjadhav/DropBox-Cloud-Storage",
+    "extra": {
+      "owner": "atuldjadhav",
+      "language_stats": {
+        "CSS": 52.0,
+        "JavaScript": 47.2,
+        "HTML": 0.8
+      }
+    }
+  }
+]
+```
