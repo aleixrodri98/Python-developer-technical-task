@@ -16,3 +16,5 @@ GithubCrawlerExtended(keywords,proxies,git_type)
 
 GithubCrawlerExtended(keywords,proxies,git_type, more_info=True) #for more info pass more_info as true
 ```
+
+Or you can use the "test.py" file to test both of the tasks
